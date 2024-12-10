@@ -1,0 +1,69 @@
+---
+title: "tidy_tuesday_1"
+format: html
+editor: visual
+---
+
+[link to so survey data](https://github.com/rfordatascience/tidytuesday/blob/main/data/2024/2024-09-03/readme.md)
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(purrr)
+```
+
+```{r}
+qname_levels_single_response_crosswalk <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2024/2024-09-03/qname_levels_single_response_crosswalk.csv')
+head(qname_levels_single_response_crosswalk)
+stackoverflow_survey_questions <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2024/2024-09-03/stackoverflow_survey_questions.csv')
+head(stackoverflow_survey_questions)
+stackoverflow_survey_single_response <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2024/2024-09-03/stackoverflow_survey_single_response.csv') 
+head(stackoverflow_survey_single_response)
+
+```
+
+```{r}
+var_join <- function(var, main_data, dict_data){
+  
+  pivot_dict <- dict_data %>% 
+    filter(qname == var) %>% 
+    pivot_wider(values_from = level, names_from = qname)
+  
+  main_data <- main_data %>% 
+    select({{var}}) %>% 
+    left_join(pivot_dict, join_by({{var}}))
+  
+  names(main_data) <- c(var, paste0(var, "_", "label"))
+  
+  return(main_data)
+  
+}
+```
+
+```{r}
+# var_join("ai_threat", stackoverflow_survey_single_response, qname_levels_single_response_crosswalk) 
+```
+
+```{r}
+#main_branch, age, ed_level, years_code, years_code_pro, country
+var_interest <-  qname_levels_single_response_crosswalk %>% 
+  filter((qname %in% c("main_branch","age",  'ed_level', 'years_code', 'years_code_pro', 'country')) | str_starts(qname, "ai")) %>% 
+  distinct(qname) %>% 
+  pull()
+```
+
+Research Question: What do developers on StackOverFlow think of AI?
+
+```{r}
+df_temp <- map(var_interest, ~ var_join(.x, stackoverflow_survey_single_response, qname_levels_single_response_crosswalk )) %>% 
+  bind_cols()
+
+
+data <- stackoverflow_survey_single_response %>% 
+   select("years_code", "years_code_pro", "country") %>% 
+   bind_cols(df_temp) %>% 
+   select(any_of(c("years_code", "years_code_pro", "country")) | ends_with("label"))
+
+
+data
+```
