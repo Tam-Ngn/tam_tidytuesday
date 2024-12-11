@@ -1,0 +1,118 @@
+---
+title: "tidy_tuesday_3"
+author: "Tam Nguyen"
+format: html
+editor: visual
+---
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(maps)
+library(tidytext)
+library(widyr)
+```
+
+Research Question: What are some of the most common killer whale movements?
+
+```{r}
+cia_factbook <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2024/2024-10-22/cia_factbook.csv')
+
+```
+
+```{r}
+# Get world map data
+world_map <- map_data("world")
+
+asian_countries <- c("China", "India", "Japan", "South Korea", "Indonesia", 
+                     "Vietnam", "Thailand", "Philippines", "Malaysia", "Pakistan",
+                     "Bangladesh", "Russia", "Turkey", "Iran", "Saudi Arabia")
+
+# Filter world map for Asian countries
+asian_map <- world_map %>%
+  filter(region %in% asian_countries)
+
+  
+ 
+```
+
+```{r}
+ ggplot(data = cia_factbook, aes(map_id = country, fill = birth_rate)) +
+  geom_map(map = asian_map)+
+  expand_limits(x = asian_map$long, y = asian_map$lat) +
+  theme_minimal() +
+  labs(title = "World Map")
+
+```
+
+```{r}
+cia_country <- cia_factbook %>% 
+  distinct(country)
+
+cia_country
+```
+
+```{r}
+world_map_countries %>% 
+  left_join(cia_country, by = c("region" = "country")) %>% 
+  View()
+```
+
+```{r}
+library(rnaturalearth)
+library(rnaturalearthdata)
+library(sf)
+
+# Load world data
+world <- ne_countries(scale = "medium", returnclass = "sf")
+
+# Plot the map
+ggplot(data = world) +
+  geom_sf(fill = "lightblue", color = "white") +
+  theme_minimal() +
+  labs(title = "World Map (High Quality)")
+```
+
+```{r}
+fiscal_sponsor_directory <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2024/2024-03-12/fiscal_sponsor_directory.csv')
+
+
+```
+
+```{r}
+fiscal_sponsor_directory %>% 
+  mutate(fee = str_extract(fiscal_sponsorship_fee_description, "\\d+%")) %>% 
+  filter(!is.na(fee))
+```
+
+```{r}
+ filter(!word1 %in% stop_words$word, !word2 %in% stop_words$word)
+```
+
+```{r}
+tokenized_words <- fiscal_sponsor_directory %>% 
+  select(services, project_types) %>% 
+  mutate(combined_text = str_c(project_types,services, sep = " " ), 
+         doc = row_number()) %>% 
+  unnest_tokens(word_s, services) %>% 
+  unnest_tokens(word_p, project_types) %>% 
+  filter(!word_s %in% stop_words$word, !word_p %in% stop_words$word) %>% 
+  count(word_p, word_s, sort = TRUE) 
+
+tokenized_words 
+```
+
+```{r}
+tokenized_words %>% 
+  filter(word_s == "tax") %>% 
+  slice_max(n , n = 20)
+```
+
+```{r}
+tokenized_words %>% 
+  distinct(word_s)
+```
+
+```{r}
+c("tax","accounting", "auditing" ,"marketing", "filmmakers", "education", "insurance", "bookkeeping", "resources", "nonprofit", "clinics", "stock", "fundraising")
+```

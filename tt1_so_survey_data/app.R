@@ -33,9 +33,9 @@ ui <- fluidPage(
                ),
                mainPanel(
             
-                  plotlyOutput("scatterPlot1"),
-                  plotlyOutput("scatterPlot2"),
-                  plotlyOutput("scatterPlot3")
+                  plotOutput("scatterPlot1"),
+                  plotOutput("scatterPlot2"),
+                  plotOutput("scatterPlot3")
 
                )
              )
@@ -49,11 +49,11 @@ ui <- fluidPage(
                ),
                mainPanel(
                  
-                 plotlyOutput("aiPlot1"),
-                 plotlyOutput("aiPlot2"),
-                 plotlyOutput("aiPlot3"),
-                 plotlyOutput("aiPlot4"),
-                 plotlyOutput("aiPlot5")
+                 plotOutput("aiPlot1"),
+                 plotOutput("aiPlot2"),
+                 plotOutput("aiPlot3"),
+                 plotOutput("aiPlot4"),
+                 plotOutput("aiPlot5")
                  
                )
              )),
@@ -64,7 +64,7 @@ ui <- fluidPage(
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
-    output$scatterPlot1 <- renderPlotly({
+    output$scatterPlot1 <- renderPlot({
       data %>% 
         filter(country == input$country) %>% 
         count(main_branch_label) %>% 
@@ -81,7 +81,7 @@ server <- function(input, output) {
               )
         
     })
-    output$scatterPlot2 <- renderPlotly({
+    output$scatterPlot2 <- renderPlot({
       data %>% 
         filter(country == input$country) %>% 
         count(age_label) %>% 
@@ -98,7 +98,7 @@ server <- function(input, output) {
         )
       
     })
-    output$scatterPlot3 <- renderPlotly({
+    output$scatterPlot3 <- renderPlot({
       data %>% 
         filter(country == input$country) %>% 
         count(ed_level_label) %>% 
@@ -116,7 +116,7 @@ server <- function(input, output) {
       
     })
     
-    output$aiPlot1 <- renderPlotly({
+    output$aiPlot1 <- renderPlot({
       data %>% 
         filter(country == input$country, age_label == input$age, ed_level_label == input$education) %>% 
         count(ai_select_label) %>% 
@@ -134,7 +134,7 @@ server <- function(input, output) {
       
     })
     
-    output$aiPlot2 <- renderPlotly({
+    output$aiPlot2 <- renderPlot({
       data %>% 
         filter(country == input$country, age_label == input$age, ed_level_label == input$education) %>% 
         count(ai_sent_label) %>% 
@@ -151,7 +151,7 @@ server <- function(input, output) {
         )
       
     })
-    output$aiPlot3 <- renderPlotly({
+    output$aiPlot3 <- renderPlot({
       data %>% 
         filter(country == input$country, age_label == input$age, ed_level_label == input$education) %>% 
         count(ai_acc_label) %>% 
@@ -168,7 +168,7 @@ server <- function(input, output) {
         )
       
     })
-    output$aiPlot4 <- renderPlotly({
+    output$aiPlot4 <- renderPlot({
       data %>% 
         filter(country == input$country, age_label == input$age, ed_level_label == input$education) %>% 
         count(ai_complex_label) %>% 
@@ -186,7 +186,7 @@ server <- function(input, output) {
       
     })
 
-    output$aiPlot5 <- renderPlotly({
+    output$aiPlot5 <- renderPlot({
       data %>% 
         filter(country == input$country, age_label == input$age, ed_level_label == input$education) %>% 
         count(ai_threat_label) %>% 

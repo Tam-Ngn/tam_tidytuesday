@@ -1,0 +1,13 @@
+name: tt1_so_survey_data
+title: tt1_so_survey_data
+username:
+account: tamnguyenshiny
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 13580866
+bundleId: 9505506
+url: https://tamnguyenshiny.shinyapps.io/tt1_so_survey_data/
+when: 1733954724.1945
+lastSyncTime: 1733954724.19452
+asMultiple: FALSE
+asStatic: FALSE
